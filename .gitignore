@@ -1,3 +1,9 @@
 # idea files
 .idea/
+
+# virtual env
+.env
+
 esp/data/local_conf.py
+
+pylint.rc
