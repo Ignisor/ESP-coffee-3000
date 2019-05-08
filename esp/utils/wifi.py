@@ -4,6 +4,7 @@ import machine
 
 from data import conf
 from utils.pins import LED
+from utils.user_config import UserConfig
 
 ap_if = network.WLAN(network.AP_IF)
 sta_if = network.WLAN(network.STA_IF)
@@ -17,14 +18,21 @@ def toggle_wifi(status=True):
 def toggle_hotspot(status=True):
     """Enables or disables hotspot (ap_if)"""
     ap_if.active(status)
+    ap_if.config(essid=conf.AP_IF_SSID, authmode=network.AUTH_OPEN)
 
 
 def connect(ssid=None, password=None):
     """Tries to connect to the wi-fi network"""
-    ssid = ssid or conf.SSID
-    password = password or conf.PASSWORD
+    user_conf = UserConfig().get()
 
-    for i in range(conf.CONNECT_RETRIES):
+    try:
+        ssid = ssid or user_conf['ssid']
+        password = password or user_conf['password']
+    except KeyError:
+        print('WiFi credentials not specified')
+        return sta_if.isconnected()
+
+    for _ in range(conf.CONNECT_RETRIES):
         t_start = time.time()
         sta_if.connect(ssid, password)
 
@@ -39,12 +47,22 @@ def connect(ssid=None, password=None):
                 break
 
         if sta_if.isconnected():
-            return sta_if.isconnected()
+            toggle_hotspot(False)
+            break
+
+    return sta_if.isconnected()
 
 
 def reset_if_not_connected():
     if sta_if.isconnected():
         return True
-    else:
-        machine.reset()
-        return False
+
+    machine.reset()
+    return False
+
+
+def ap_if_not_connected():
+    if not sta_if.isconnected():
+        toggle_hotspot(True)
+
+    return True

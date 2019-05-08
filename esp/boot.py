@@ -11,7 +11,4 @@ is_connected = wifi.connect()
 
 LED.value(not is_connected)  # 'not' because 0 - is enable for led
 
-if is_connected:
-    RELAY.close()
-
 gc.collect()

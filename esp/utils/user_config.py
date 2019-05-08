@@ -29,5 +29,9 @@ class UserConfig:
         self.__conf.update(values)
         self._save()
 
+        if 'ssid' in values or 'password' in values:
+            from utils import wifi
+            wifi.connect()
+
     def reload(self):
         self._load()

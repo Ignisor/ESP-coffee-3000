@@ -1,6 +1,5 @@
-SSID = '[ssid]'
-PASSWORD = '[pass]'
-CONNECT_RETRIES = 10
+AP_IF_SSID = 'TooSmart Coffee'
+CONNECT_RETRIES = 3
 CONNECTION_TIME = 6.0
 
 ERROR_LOG_FILENAME = 'error.log'
