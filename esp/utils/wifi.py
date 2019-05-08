@@ -1,6 +1,7 @@
 import time
 import network
 import machine
+import ntptime
 
 from data import conf
 from utils.pins import LED
@@ -48,6 +49,7 @@ def connect(ssid=None, password=None):
 
         if sta_if.isconnected():
             toggle_hotspot(False)
+            ntptime.settime()
             break
 
     return sta_if.isconnected()
