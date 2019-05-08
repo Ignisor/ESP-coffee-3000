@@ -19,7 +19,7 @@ def stop_brew(request):
 
 @srv.view('POST', '/brew/status/')
 def brew_status(request):
-    return JSONResponse(200, {"is_brewing": BREW_CONTROLLER.is_brewing})
+    return JSONResponse(200, {"is_brewing": BREW_CONTROLLER.status_info})
 
 
 @srv.view('GET', '/config/')
