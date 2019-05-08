@@ -6,10 +6,10 @@ OFF = 0
 
 LED = machine.Pin(1, machine.Pin.OUT)
 
-timer = machine.Timer(-1)
+TIMER = machine.Timer(-1)
 
 
-class RelayController(object):
+class RelayController:
     OPEN = b'\xA0\x01\x00\xA1'
     CLOSE = b'\xA0\x01\x01\xA2'
 
@@ -37,15 +37,19 @@ class RelayController(object):
         self.relay.write(self.CLOSE)
         self.opened = False
 
+    def open_for_duration(self, duration):
+        """
+        Opens relay for some duration. Will not open if already opened.
+        :param duration: time in seconds
+        :return: boolean, True if opened, False if closed
+        """
+        if self.opened:
+            return False  # don't open if already opened
+
+        self.open()
+        TIMER.init(period=duration * 1000, mode=machine.Timer.ONE_SHOT, callback=lambda t: self.close())
+
+        return True
+
 
 RELAY = RelayController()
-
-
-def open_relay(duration=5):
-    if RELAY.opened:
-        return False  # don't open if already opened
-
-    RELAY.open()
-    timer.init(period=duration * 1000, mode=machine.Timer.ONE_SHOT, callback=lambda t: RELAY.close())
-
-    return True
