@@ -28,3 +28,6 @@ class UserConfig:
     def update(self, values):
         self.__conf.update(values)
         self._save()
+
+    def reload(self):
+        self._load()

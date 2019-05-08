@@ -6,14 +6,13 @@ OFF = 0
 
 LED = machine.Pin(1, machine.Pin.OUT)
 
-TIMER = machine.Timer(-1)
-
 
 class RelayController:
     OPEN = b'\xA0\x01\x00\xA1'
     CLOSE = b'\xA0\x01\x01\xA2'
 
     def __init__(self):
+        self.timer = machine.Timer(-1)
         self.opened = False
         self._relay = None
 
@@ -37,17 +36,19 @@ class RelayController:
         self.relay.write(self.CLOSE)
         self.opened = False
 
+        self.timer.deinit()  # interrupt time in case open_for_duration is going on
+
     def open_for_duration(self, duration):
         """
         Opens relay for some duration. Will not open if already opened.
         :param duration: time in seconds
-        :return: boolean, True if opened, False if closed
+        :return: boolean, True if opened, False if not
         """
         if self.opened:
             return False  # don't open if already opened
 
         self.open()
-        TIMER.init(period=duration * 1000, mode=machine.Timer.ONE_SHOT, callback=lambda t: self.close())
+        self.timer.init(period=duration * 1000, mode=machine.Timer.ONE_SHOT, callback=lambda t: self.close())
 
         return True
 
